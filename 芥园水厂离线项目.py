@@ -27,7 +27,7 @@ with st.container(border=True):
             dataframe['时间'] = pd.to_datetime(dataframe['时间'], format='%Y-%m-%d %H:%M:%S')
             dataframe.index = dataframe['时间']
             dataframe.drop(columns=['时间'], axis=1, inplace=True)
-            st.write(dataframe)
+            # st.write(dataframe)
         else:
             st.write('请上传数据')
 

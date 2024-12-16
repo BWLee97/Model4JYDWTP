@@ -70,6 +70,7 @@ with st.container(border=True):
 
                 model_na = RandomForestRegressor().fit(X_train_na, y_train_na)
                 y_pred_na = model_na.predict(X_test_na)
+                r2_test_na = metrics.r2_score(y_test_na, y_pred_na)
                 y_test_na = scaler.inverse_transform(y_test_na)
                 y_pred_na = scaler.inverse_transform(y_pred_na.reshape(-1, 1))
                 mse_test_na = metrics.mean_squared_error(y_test_na, y_pred_na)
@@ -100,6 +101,7 @@ with st.container(border=True):
                 y_pred_fe = model_fe.predict(X_test_fe)
                 y_test_fe = scaler.inverse_transform(y_test_fe)
                 y_pred_fe = scaler.inverse_transform(y_pred_fe.reshape(-1, 1))
+                mae_test_fe = metrics.mean_absolute_error(y_test_fe, y_pred_fe)
                 mse_test_fe = metrics.mean_squared_error(y_test_fe, y_pred_fe)
                 rmse_test_fe = np.sqrt(mse_test_fe)
                 rmse_test_fe = "%.2f" % rmse_test_fe
@@ -206,21 +208,28 @@ with st.container(border=True):
             with open('model_na.pkl', 'rb') as f:
                 model_na = pickle.load(f)
             prediction_na = model_na.predict(input_data)
-            prediction_na = prediction_na * (data['次氯酸钠'].max() - data['次氯酸钠'].min()) + data['次氯酸钠'].min() - 0.5
+            prediction_na = prediction_na * (data['次氯酸钠'].max() - data['次氯酸钠'].min()) + data['次氯酸钠'].min()
+            prediction_na = abs(prediction_na - 0.9)
             prediction_na = "%.2f" % prediction_na
             st.subheader(f'预测需要投加 {prediction_na} mg/L的次氯酸钠！')
 
             with open('model_fe.pkl', 'rb') as f:
                 model_fe = pickle.load(f)
             prediction_fe = model_fe.predict(input_data)
-            prediction_fe = prediction_fe * (data['铁盐'].max() - data['铁盐'].min()) + data['铁盐'].min() - 0.5
-            prediction_fe = "%.2f" % prediction_fe
+            prediction_fe = prediction_fe * (data['铁盐'].max() - data['铁盐'].min()) + data['铁盐'].min()
+            corr = abs(prediction_fe - 0.8)
+            if (corr < 1).any():
+                result = prediction_fe
+            else:
+                result = corr
+            prediction_fe = "%.2f" % result
             st.subheader(f'预测需要投加 {prediction_fe} mg/L的铁盐！')
 
             with open('model_al.pkl', 'rb') as f:
                 model_al = pickle.load(f)
             prediction_al = model_al.predict(input_data)
-            prediction_al = prediction_al * (data['铁盐'].max() - data['铁盐'].min()) + data['铁盐'].min() - 0.5
+            prediction_al = prediction_al * (data['铁盐'].max() - data['铁盐'].min()) + data['铁盐'].min()
+            prediction_al = abs(prediction_al - 0.4)
             prediction_al = "%.2f" % prediction_al
             st.subheader(f'预测需要投加 {prediction_al} mg/L的铝盐！')
 

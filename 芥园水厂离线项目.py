@@ -18,13 +18,18 @@ with st.container(border=True):
         st.subheader('1.1 上传训练数据')
         uploaded_file = st.file_uploader("请根据**注意事项**中的要求上传Excel数据")
         with st.expander('注意事项'):
-            st.write('1111111')
-
+            st.write('1. 上传的Excel数据需要包括时间信息、输入变量两个和输出变量。')
+            st.write('2. 时间信息仅包含一列，列名应为**时间**。')
+            st.write('3. 输入变量包含10列，应按**2.1 输入数据**所示的顺序列出并以此命名。')
+            st.write('4. 输出变量包含4列，包括**次氯酸钠、铁盐、铝盐、硫酸铵**，也应按顺序列出并以此命名。')
+            st.write('5. 上传数据后按顺序操作即可。')
+            st.write('**注：目前仍处于开发阶段，测试内容及体验不代表最终品质。**')
     with st.container(border=True):
         st.subheader('1.2 加载训练数据')
         if uploaded_file is not None:
             dataframe = pd.read_excel(uploaded_file)
-            dataframe['时间'] = pd.to_datetime(dataframe['时间'], format='%Y-%m-%d %H:%M:%S')
+            dataframe['时间'] = pd.to_datetime(dataframe['时间'],
+                                             format='%Y-%m-%d %H:%M:%S')
             dataframe.index = dataframe['时间']
             dataframe.drop(columns=['时间'], axis=1, inplace=True)
             # st.write(dataframe)
@@ -59,10 +64,12 @@ with st.container(border=True):
                 scaled_data_na = pd.concat([scaled_X, scaled_y_na], axis=1)
 
                 na_name = ['次氯酸钠']
-                na_data_names = pd.concat([pd.Series(X_names), pd.Series(na_name)], axis=0)
+                na_data_names = pd.concat([pd.Series(X_names),
+                                           pd.Series(na_name)], axis=0)
                 scaled_data_na.columns = na_data_names
 
-                data_train_na, data_test_na = train_test_split(scaled_data_na, test_size=0.2)
+                data_train_na, data_test_na = train_test_split(scaled_data_na,
+                                                               test_size=0.2)
                 y_train_na = data_train_na[na_name]
                 X_train_na = data_train_na.drop(na_name, axis=1)
                 y_test_na = data_test_na[na_name]
@@ -88,10 +95,12 @@ with st.container(border=True):
                 scaled_data_fe = pd.concat([scaled_X, scaled_y_fe], axis=1)
 
                 fe_name = ['铁盐']
-                fe_data_names = pd.concat([pd.Series(X_names), pd.Series(fe_name)], axis=0)
+                fe_data_names = pd.concat([pd.Series(X_names),
+                                           pd.Series(fe_name)], axis=0)
                 scaled_data_fe.columns = fe_data_names
 
-                data_train_fe, data_test_fe = train_test_split(scaled_data_fe, test_size=0.2)
+                data_train_fe, data_test_fe = train_test_split(scaled_data_fe,
+                                                               test_size=0.2)
                 y_train_fe = data_train_fe[fe_name]
                 X_train_fe = data_train_fe.drop(fe_name, axis=1)
                 y_test_fe = data_test_fe[fe_name]
@@ -116,10 +125,12 @@ with st.container(border=True):
                 scaled_data_al = pd.concat([scaled_X, scaled_y_al], axis=1)
 
                 al_name = ['铝盐']
-                al_data_names = pd.concat([pd.Series(X_names), pd.Series(al_name)], axis=0)
+                al_data_names = pd.concat([pd.Series(X_names),
+                                           pd.Series(al_name)], axis=0)
                 scaled_data_al.columns = al_data_names
 
-                data_train_al, data_test_al = train_test_split(scaled_data_al, test_size=0.2)
+                data_train_al, data_test_al = train_test_split(scaled_data_al,
+                                                               test_size=0.2)
                 y_train_al = data_train_al[al_name]
                 X_train_al = data_train_al.drop(al_name, axis=1)
                 y_test_al = data_test_al[al_name]
@@ -142,10 +153,12 @@ with st.container(border=True):
                 scaled_data_nh = pd.concat([scaled_X, scaled_y_nh], axis=1)
 
                 nh_name = ['硫酸铵']
-                nh_data_names = pd.concat([pd.Series(X_names), pd.Series(nh_name)], axis=0)
+                nh_data_names = pd.concat([pd.Series(X_names),
+                                           pd.Series(nh_name)], axis=0)
                 scaled_data_nh.columns = nh_data_names
 
-                data_train_nh, data_test_nh = train_test_split(scaled_data_nh, test_size=0.2)
+                data_train_nh, data_test_nh = train_test_split(scaled_data_nh,
+                                                               test_size=0.2)
                 y_train_nh = data_train_nh[nh_name]
                 X_train_nh = data_train_nh.drop(nh_name, axis=1)
                 y_test_nh = data_test_nh[nh_name]
@@ -170,17 +183,27 @@ with st.container(border=True):
     with st.form('my_form'):
         st.subheader('2.1 输入数据')
         st.write('请按要求输入相关信息，然后按预测键。')
-        FLOW = st.number_input('进水量', min_value=300.0, max_value=500.0, step=0.01)
-        IT = st.number_input('进水浊度', min_value=0.1, max_value=25.0, step=0.01)
-        AN = st.number_input('氨氮', min_value=0.01, max_value=0.3, step=0.01)
-        pH = st.number_input('pH', min_value=7.0, max_value=9.0, step=0.01)
-        ALK = st.number_input('碱度', min_value=70, max_value=120, step=1)
-        TEM = st.number_input('水温', min_value=2.0, max_value=32.0, step=0.1)
-        ALG = st.number_input('藻类', min_value=5, max_value=2200, step=1)
-        CHL = st.number_input('叶绿素', min_value=0.0, max_value=20.0, step=0.01)
-        RAL = st.number_input('预期余铝', min_value=0.0, max_value=0.2, step=0.01)
-        ET = st.number_input('预期出水浊度', min_value=0.0, max_value=1.0, step=0.01)
-        
+        FLOW = st.number_input('进水量', min_value=300.0,
+                               max_value=500.0, step=0.01)
+        IT = st.number_input('进水浊度', min_value=0.1,
+                             max_value=25.0, step=0.01)
+        AN = st.number_input('氨氮', min_value=0.01,
+                             max_value=0.3, step=0.01)
+        pH = st.number_input('pH', min_value=7.0,
+                             max_value=9.0, step=0.01)
+        ALK = st.number_input('碱度', min_value=70,
+                              max_value=120, step=1)
+        TEM = st.number_input('水温', min_value=2.0,
+                              max_value=32.0, step=0.1)
+        ALG = st.number_input('藻类', min_value=5,
+                              max_value=2200, step=1)
+        CHL = st.number_input('叶绿素', min_value=0.0,
+                              max_value=20.0, step=0.01)
+        RAL = st.number_input('预期余铝', min_value=0.0,
+                              max_value=0.2, step=0.01)
+        ET = st.number_input('预期出水浊度', min_value=0.0,
+                             max_value=1.0, step=0.01)
+
         submitted = st.form_submit_button('预测')
     with st.container(border=True):
         st.subheader('2.2 投药量预测')
@@ -190,20 +213,41 @@ with st.container(border=True):
                                        '水温': [TEM], '藻类': [ALG],
                                        '叶绿素': [CHL], '余铝': [RAL],
                                        '出水浊度': [ET]})
+
             def norm(x, xmin, xmax):
                 x = (x - xmin)/(xmax-xmin)
                 return x
             data = pd.read_excel(uploaded_file)
-            input_data['进水量'] = norm(input_data['进水量'], data['进水量'].min(), data['进水量'].max())
-            input_data['浑浊度'] = norm(input_data['浑浊度'], data['浑浊度'].min(), data['浑浊度'].max())
-            input_data['氨氮'] = norm(input_data['氨氮'], data['氨氮'].min(), data['氨氮'].max())
-            input_data['pH'] = norm(input_data['pH'], data['pH'].min(), data['pH'].max())
-            input_data['总碱度'] = norm(input_data['总碱度'], data['总碱度'].min(), data['总碱度'].max())
-            input_data['水温'] = norm(input_data['水温'], data['水温'].min(), data['水温'].max())
-            input_data['藻类'] = norm(input_data['藻类'], data['藻类'].min(), data['藻类'].max())
-            input_data['叶绿素'] = norm(input_data['叶绿素'], data['叶绿素'].min(), data['叶绿素'].max())
-            input_data['余铝'] = norm(input_data['余铝'], data['余铝'].min(), data['余铝'].max())
-            input_data['出水浊度'] = norm(input_data['出水浊度'], data['出水浊度'].min(), data['出水浊度'].max())
+            input_data['进水量'] = norm(input_data['进水量'],
+                                     data['进水量'].min(),
+                                     data['进水量'].max())
+            input_data['浑浊度'] = norm(input_data['浑浊度'],
+                                     data['浑浊度'].min(),
+                                     data['浑浊度'].max())
+            input_data['氨氮'] = norm(input_data['氨氮'],
+                                    data['氨氮'].min(),
+                                    data['氨氮'].max())
+            input_data['pH'] = norm(input_data['pH'],
+                                    data['pH'].min(),
+                                    data['pH'].max())
+            input_data['总碱度'] = norm(input_data['总碱度'],
+                                     data['总碱度'].min(),
+                                     data['总碱度'].max())
+            input_data['水温'] = norm(input_data['水温'],
+                                    data['水温'].min(),
+                                    data['水温'].max())
+            input_data['藻类'] = norm(input_data['藻类'],
+                                    data['藻类'].min(),
+                                    data['藻类'].max())
+            input_data['叶绿素'] = norm(input_data['叶绿素'],
+                                     data['叶绿素'].min(),
+                                     data['叶绿素'].max())
+            input_data['余铝'] = norm(input_data['余铝'],
+                                    data['余铝'].min(),
+                                    data['余铝'].max())
+            input_data['出水浊度'] = norm(input_data['出水浊度'],
+                                      data['出水浊度'].min(),
+                                      data['出水浊度'].max())
 
             with open('model_na.pkl', 'rb') as f:
                 model_na = pickle.load(f)
